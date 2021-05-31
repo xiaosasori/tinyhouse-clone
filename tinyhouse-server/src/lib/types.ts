@@ -65,7 +65,7 @@ export interface User {
 }
 
 export interface Database {
-  bookings: Collection<Booking>;
+  // bookings: Collection<Booking>;
   listings: Collection<Listing>;
-  users: Collection<User>;
+  // users: Collection<User>;
 }
