@@ -785,9 +785,9 @@ const seed = async () => {
       await db.listings.insertOne(listing);
     }
 
-    // for (const user of users) {
-    //   await db.users.insertOne(user);
-    // }
+    for (const user of users) {
+      await db.users.insertOne(user);
+    }
 
     console.log("[seed] : success");
     process.exit();

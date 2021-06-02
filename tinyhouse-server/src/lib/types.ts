@@ -24,6 +24,18 @@ export interface BookingsIndexYear {
 export interface BookingsIndex {
   [key: string]: BookingsIndexYear;
 }
+/**
+ * 2019-01-01
+ * 2019-01-02
+ * 2019-05-31
+ * {
+ *   "2019": {
+ *     "00": {"01": true, "02": true},
+ *     "04": {"31": true}
+ *   }
+ * }
+ * month starts from 0
+ */
 
 export interface Booking {
   _id: ObjectId;
@@ -65,7 +77,7 @@ export interface User {
 }
 
 export interface Database {
-  // bookings: Collection<Booking>;
+  bookings: Collection<Booking>;
   listings: Collection<Listing>;
-  // users: Collection<User>;
+  users: Collection<User>;
 }

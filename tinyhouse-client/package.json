@@ -7,6 +7,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^6.0.1",
     "@apollo/client": "^3.3.19",
     "@vue/apollo-composable": "^4.0.0-alpha.12",
     "ant-design-vue": "^2.1.6",
