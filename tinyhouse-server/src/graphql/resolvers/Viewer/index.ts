@@ -6,7 +6,7 @@ import { LoginArgs } from "./types"
 import { Request, Response } from 'express'
 const cookieOptions = {
   httpOnly: true,
-  sameSite: true, // strict
+  sameSite: false, // strict
   signed: true, // ensure cookie not to be tampered,
   secure: process.env.NODE_ENV === 'development' ? false : true // cookie can only be sent over https
 }
@@ -88,10 +88,11 @@ const logInViaCookie = async (
   const updateRes = await db.users.findOneAndUpdate(
     { _id: req.signedCookies.viewer },
     { $set: { token } },
-    { returnDocument: "after" }
+    { returnOriginal: false }
   );
 
   const viewer = updateRes.value
+  console.log(req.signedCookies, viewer)
 
   if (!viewer) {
     res.clearCookie("viewer", cookieOptions);

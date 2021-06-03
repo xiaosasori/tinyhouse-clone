@@ -7,7 +7,7 @@
       <a-affix :offset-top="0" class="app_affix-header">
         <AppHeader />
       </a-affix>
-      <router-view />
+      <router-view :key="$route.fullPath" />
     </template>
   </a-layout>
 </template>
@@ -35,6 +35,7 @@ export default defineComponent({
 
     loginSuccess((result) => {
       setViewer(result.data.login);
+      console.log(result.data.login);
       if (result.data.login.token) {
         sessionStorage.setItem("token", result.data.login.token);
       } else {
