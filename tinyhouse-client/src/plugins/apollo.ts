@@ -13,6 +13,9 @@ const cache = new InMemoryCache()
 const apolloClient = new ApolloClient({
   link: httpLink,
   cache,
+  headers: {
+    'X-CSRF-TOKEN': sessionStorage.getItem("token") || ''
+  }
 })
 
 export default apolloClient

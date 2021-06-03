@@ -3,9 +3,16 @@ import { IResolvers } from "apollo-server-express"
 import { Google } from '../../../lib/api'
 import { Database, Viewer, User } from '../../../lib/types'
 import { LoginArgs } from "./types"
+import { Request, Response } from 'express'
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: true, // strict
+  signed: true, // ensure cookie not to be tampered,
+  secure: process.env.NODE_ENV === 'development' ? false : true // cookie can only be sent over https
+}
 
-async function loginViaGoogle(code: string, token: string, db: Database): Promise<User | undefined> {
-  const {user} = await Google.login(code)
+async function loginViaGoogle(code: string, token: string, db: Database, res: Response): Promise<User | undefined> {
+  const { user } = await Google.login(code)
   if (!user) {
     throw new Error('Google login error')
   }
@@ -19,8 +26,8 @@ async function loginViaGoogle(code: string, token: string, db: Database): Promis
 
   // user id
   const userId = userNamesList &&
-  userNamesList[0].metadata &&
-  userNamesList[0].metadata.source
+    userNamesList[0].metadata &&
+    userNamesList[0].metadata.source
     ? userNamesList[0].metadata.source.id
     : null
 
@@ -64,6 +71,32 @@ async function loginViaGoogle(code: string, token: string, db: Database): Promis
     viewer = insertResult.ops[0];
   }
 
+  res.cookie('viewer', userId, {
+    ...cookieOptions,
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+  })
+
+  return viewer
+}
+
+const logInViaCookie = async (
+  token: string,
+  db: Database,
+  req: Request,
+  res: Response
+): Promise<User | undefined> => {
+  const updateRes = await db.users.findOneAndUpdate(
+    { _id: req.signedCookies.viewer },
+    { $set: { token } },
+    { returnDocument: "after" }
+  );
+
+  const viewer = updateRes.value
+
+  if (!viewer) {
+    res.clearCookie("viewer", cookieOptions);
+  }
+
   return viewer
 }
 
@@ -78,32 +111,34 @@ export const viewerResolvers: IResolvers = {
     }
   },
   Mutation: {
-    login: async (_root: undefined, { input }: LoginArgs, { db }: { db: Database }): Promise<Viewer> => {
+    login: async (_root: undefined, { input }: LoginArgs,
+      { db, req, res }: { db: Database, req: Request, res: Response }): Promise<Viewer> => {
       try {
         const code = input ? input.code : null
         const token = crypto.randomBytes(16).toString('hex')
 
         const viewer: User | undefined = code
-         ? await loginViaGoogle(code, token, db)
-         : undefined
+          ? await loginViaGoogle(code, token, db, res)
+          : await logInViaCookie(token, db, req, res)
 
-         if (!viewer) {
-           return { didRequest: true }
-         }
+        if (!viewer) {
+          return { didRequest: true }
+        }
 
-         return {
-           _id: viewer._id,
-           token: viewer.token,
-           avatar: viewer.avatar,
-           walletId: viewer.walletId,
-           didRequest: true
-         }
+        return {
+          _id: viewer._id,
+          token: viewer.token,
+          avatar: viewer.avatar,
+          walletId: viewer.walletId,
+          didRequest: true
+        }
       } catch (error) {
         throw new Error(`Failed to login: ${error}`)
       }
     },
-    logout: (): Viewer => {
+    logout: (_root: undefined, _args: Record<string, unknown>, { res }: { res: Response }): Viewer => {
       try {
+        res.clearCookie('viewer', cookieOptions)
         return { didRequest: true }
       } catch (error) {
         throw new Error(`Failed to logout: ${error}`)

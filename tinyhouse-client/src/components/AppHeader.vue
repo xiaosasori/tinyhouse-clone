@@ -86,8 +86,7 @@ export default defineComponent({
     }
   },
   watch: {
-    '$route.fullPath': function (value) {
-      console.log(value)
+    '$route.path': function (value) {
       if (!value.includes('/listings')) {
         this.search = ''
       }

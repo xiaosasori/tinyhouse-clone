@@ -643,6 +643,7 @@ html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex-grow: 1;
 }
 .app__affix-header {
   z-index: 99;

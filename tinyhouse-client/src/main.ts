@@ -1,4 +1,4 @@
-import {router} from './router'
+import { router } from './router'
 import { createApp, h, provide } from 'vue'
 import App from './App.vue'
 import apolloClient from '@/plugins/apollo'
