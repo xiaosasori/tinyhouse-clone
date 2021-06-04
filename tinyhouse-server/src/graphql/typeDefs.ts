@@ -8,7 +8,7 @@ export const typeDefs = gql`
     checkIn: String!
     checkOut: String!
   }
-  
+
   type Bookings {
     total: Int!
     result: [Booking!]!
@@ -94,7 +94,7 @@ export const typeDefs = gql`
   type Query {
     authUrl: String!
     user(id: ID!): User!
-    listing(id: ID!): [Listing]!
+    listing(id: ID!): Listing!
     listings(
       location: String
       filter: ListingsFilter!
