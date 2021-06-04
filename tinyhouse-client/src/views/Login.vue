@@ -39,13 +39,11 @@
 <script lang="ts">
 import { useLazyQuery, useMutation } from "@vue/apollo-composable";
 import { LOGIN, AUTH_URL } from "@/lib/graphql";
-import ErrorBanner from "@/components/ErrorBanner.vue";
 import { message } from "ant-design-vue";
 import { setViewer } from "@/store/viewer";
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 export default {
-  components: { ErrorBanner },
   setup() {
     const { load: loadAuthUrl, onResult, onError } = useLazyQuery(AUTH_URL);
 

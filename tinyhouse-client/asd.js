@@ -7,12 +7,12 @@ module.exports = {
     node: true
   },
   plugins: [
-    // '@typescript-eslint'
+    '@typescript-eslint'
   ],
   extends: [
-    // 'plugin:vue/vue3-essential',
-    // '@vue/standard',
-    // '@vue/typescript/recommended'
+    'plugin:vue/vue3-essential',
+    '@vue/standard',
+    '@vue/typescript/recommended'
   ],
   rules: {
     'promise/param-names': 'off',

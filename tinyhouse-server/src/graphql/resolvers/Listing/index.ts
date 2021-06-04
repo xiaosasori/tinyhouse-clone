@@ -3,10 +3,10 @@ import { ObjectID } from 'mongodb';
 
 import { Listing, Database, User, ListingType } from "../../../lib/types";
 
-export const ListingResolvers: IResolvers = {
+export const listingResolvers: IResolvers = {
   Query: {
     listing: async (_root: undefined, _args: Record<string, unknown>, { db }: { db: Database })
-    : Promise<Listing[]> => {
+      : Promise<Listing[]> => {
       return await db.listings.find({}).toArray()
     }
   },

@@ -1,13 +1,82 @@
 <template>
-  <div>user</div>
+  <a-layout-content class="user">
+    <PageSkeleton v-if="loading" />
+    <template v-else-if="error">
+      <ErrorBanner
+        description="This user may not exist or we 've encountered an error. Please try again soon"
+      />
+      <PageSkeleton />
+    </template>
+    <a-row v-else :gutter="12" type="flex" justify="space-between">
+      <a-col :xs="24">
+        <UserProfile :user="user" :viewIsUser="viewIsUser" />
+      </a-col>
+      <a-col :xs="24">
+        <UserListings
+          :userListings="user.listings"
+          :limit="limit"
+          :listingsPage="listingsPage"
+          @update:listingsPage="listingsPage = $event"
+        />
+        <UserBookings
+          v-if="user.bookings"
+          :userBookings="user.bookings"
+          :limit="limit"
+          :bookingsPage="bookingsPage"
+          @update:bookingsPage="bookingsPage = $event"
+        />
+      </a-col>
+    </a-row>
+  </a-layout-content>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { useQuery, useResult } from "@vue/apollo-composable";
+import { User as UserData, USER } from "@/lib/graphql";
+import { useRoute } from "vue-router";
+import { ref, computed, defineComponent } from "vue";
+import { viewer } from "@/store/viewer";
+import UserProfile from "./UserProfile.vue";
+import UserListings from "./UserListings.vue";
+import UserBookings from "./UserBookings.vue";
 
-}
+export default defineComponent({
+  name: "PageUser",
+  components: { UserProfile, UserListings, UserBookings },
+  setup() {
+    const route = useRoute();
+    const bookingsPage = ref(1);
+    const listingsPage = ref<Number>(1);
+    const PAGE_LIMIT = 4;
+    const { result, loading, error } = useQuery<UserData>(
+      USER,
+      {
+        id: route.params.id,
+        bookingsPage,
+        listingsPage,
+        limit: PAGE_LIMIT,
+      },
+      {
+        fetchPolicy: "cache-and-network",
+      }
+    );
+
+    const user = useResult(result, null, (data) => data.user);
+    const viewIsUser = computed(() => {
+      return viewer.id === route.params.id;
+    });
+    return {
+      user,
+      loading,
+      error,
+      viewIsUser,
+      listingsPage,
+      bookingsPage,
+      limit: PAGE_LIMIT,
+    };
+  },
+});
 </script>
 
 <style>
-
 </style>
