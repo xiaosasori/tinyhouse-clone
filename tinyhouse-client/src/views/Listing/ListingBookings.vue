@@ -2,7 +2,10 @@
   <div class="listing-bookings">
     <a-divider />
     <div class="listing-bookings__section">
-      <a-typography-title class="listing-bookings__title" :level="4">
+      <a-typography-title
+        class="listing-bookings__title"
+        :level="4"
+      >
         Booking
       </a-typography-title>
     </div>
@@ -13,7 +16,7 @@
         sm: 2,
         lg: 3,
       }"
-      :dataSource="listingBookings.result"
+      :data-source="listingBookings.result"
       :locale="{ emptyText: 'No bookings have been made yet!' }"
       :pagination="{
         current: bookingsPage,
@@ -29,15 +32,22 @@
           <div class="listing-bookings__bookings-history">
             <div>
               Check in:
-              <a-typography-text strong>{{ item.checkIn }}</a-typography-text>
+              <a-typography-text strong>
+                {{ item.checkIn }}
+              </a-typography-text>
             </div>
             <div>
               Check out:
-              <a-typography-text strong>{{ item.checkOut }}</a-typography-text>
+              <a-typography-text strong>
+                {{ item.checkOut }}
+              </a-typography-text>
             </div>
           </div>
           <router-link :to="`/user/${item.tenant.id}`">
-            <a-avatar :src="item.tenant.avatar" :size="64" />
+            <a-avatar
+              :src="item.tenant.avatar"
+              :size="64"
+            />
           </router-link>
         </a-list-item>
       </template>
@@ -46,22 +56,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { Listing as ListingData } from "@/lib/graphql";
+import { defineComponent, PropType } from 'vue'
+import { Listing as ListingData } from '@/lib/graphql'
 
 export default defineComponent({
-  name: "ListingBookings",
+  name: 'ListingBookings',
   props: {
-    listingBookings: Object as PropType<ListingData["listing"]["bookings"]>,
+    listingBookings: Object as PropType<ListingData['listing']['bookings']>,
     bookingsPage: Number,
     limit: Number,
   },
+  emits: ['update:bookingsPage'],
   setup(_, { emit }) {
     function setBookingsPage(page: number) {
-      emit("update:bookingsPage", page);
+      emit('update:bookingsPage', page)
     }
 
-    return { setBookingsPage };
+    return { setBookingsPage }
   },
-});
+})
 </script>

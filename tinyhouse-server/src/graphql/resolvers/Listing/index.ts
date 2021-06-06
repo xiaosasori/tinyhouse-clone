@@ -53,7 +53,7 @@ export const listingResolvers: IResolvers = {
       return user;
     },
     bookingsIndex: ({ bookingsIndex }: Listing): string => {
-      console.log(bookingsIndex)
+      console.log('bookingsIndex', bookingsIndex)
       return JSON.stringify(bookingsIndex);
     },
     bookings: async (

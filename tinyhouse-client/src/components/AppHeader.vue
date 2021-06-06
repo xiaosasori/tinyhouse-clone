@@ -3,21 +3,28 @@
     <div class="app-header__logo-search-section">
       <div class="app-header__logo">
         <router-link to="/">
-          <img src="@/assets/tinyhouse-logo.png" alt="App logo" />
+          <img
+            src="@/assets/tinyhouse-logo.png"
+            alt="App logo"
+          >
         </router-link>
       </div>
 
       <div class="app-header__search-input">
         <a-input-search
-          placeholder="Search 'San Fransisco'"
-          enterButton
-          @search="handleSearch"
           v-model.trim="search"
+          placeholder="Search 'San Fransisco'"
+          enter-button
+          @search="handleSearch"
         />
       </div>
     </div>
     <div class="app-header__menu-section">
-      <a-menu mode="horizontal" :selectable="false" class="menu">
+      <a-menu
+        mode="horizontal"
+        :selectable="false"
+        class="menu"
+      >
         <a-menu-item key="/host">
           <router-link to="/host">
             <HomeOutlined />
@@ -26,9 +33,9 @@
         </a-menu-item>
         <template v-if="viewer.id && viewer.avatar">
           <a-sub-menu>
-          <template #title>
-            <a-avatar :src="viewer.avatar" />
-          </template>
+            <template #title>
+              <a-avatar :src="viewer.avatar" />
+            </template>
             <a-menu-item key="/user">
               <router-link :to="`/user/${viewer.id}`">
                 <UserOutlined />
@@ -44,7 +51,9 @@
         </template>
         <a-menu-item v-else>
           <router-link to="/login">
-            <a-button type="primary">Sign In</a-button>
+            <a-button type="primary">
+              Sign In
+            </a-button>
           </router-link>
         </a-menu-item>
       </a-menu>
@@ -54,35 +63,41 @@
 
 <script>
 import { defineComponent } from 'vue'
-import {viewer, setViewer} from '@/store/viewer'
-import {useMutation} from '@vue/apollo-composable'
-import {LOGOUT} from '@/lib/graphql'
+import { viewer, setViewer } from '@/store/viewer'
+import { useMutation } from '@vue/apollo-composable'
+import { LOGOUT } from '@/lib/graphql'
 import { message } from 'ant-design-vue'
-import {HomeOutlined, LogoutOutlined, UserOutlined} from '@ant-design/icons-vue'
+import {
+  HomeOutlined,
+  LogoutOutlined,
+  UserOutlined,
+} from '@ant-design/icons-vue'
 
 export default defineComponent({
   name: 'AppHeader',
-  components: {HomeOutlined, LogoutOutlined, UserOutlined},
+  components: { HomeOutlined, LogoutOutlined, UserOutlined },
   setup() {
-    const {mutate: logout, onDone, onError} = useMutation(LOGOUT)
+    const { mutate: logout, onDone, onError } = useMutation(LOGOUT)
     onDone((result) => {
       setViewer(result.data.logout)
       sessionStorage.removeItem('token')
       message.info(`You 've successfully logged out!`)
     })
     onError(() => {
-      message.error(`Sorry we were'nt able to log you out. Please try again later!`)
+      message.error(
+        `Sorry we were'nt able to log you out. Please try again later!`
+      )
     })
 
-    function handleLogout () {
+    function handleLogout() {
       logout()
     }
-    return {handleLogout}
+    return { handleLogout }
   },
   data() {
     return {
       search: '',
-      viewer
+      viewer,
     }
   },
   watch: {
@@ -93,16 +108,15 @@ export default defineComponent({
       if (value.includes('/listings') && this.$route.params.id) {
         this.search = this.$route.params.id
       }
-    }
+    },
   },
   methods: {
     handleSearch() {
       this.$router.push(`/listings/${this.search}`)
-    }
-  }
+    },
+  },
 })
 </script>
 
 <style scoped>
-
 </style>

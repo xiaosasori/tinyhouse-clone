@@ -4,9 +4,10 @@ import { Google } from '../../../lib/api'
 import { Database, Viewer, User } from '../../../lib/types'
 import { LoginArgs } from "./types"
 import { Request, Response } from 'express'
+
 const cookieOptions = {
   httpOnly: true,
-  sameSite: false, // strict
+  sameSite: true, // strict
   signed: true, // ensure cookie not to be tampered,
   secure: process.env.NODE_ENV === 'development' ? false : true // cookie can only be sent over https
 }
@@ -92,7 +93,6 @@ const logInViaCookie = async (
   );
 
   const viewer = updateRes.value
-  console.log(req.signedCookies, viewer)
 
   if (!viewer) {
     res.clearCookie("viewer", cookieOptions);

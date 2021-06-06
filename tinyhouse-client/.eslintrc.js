@@ -1,22 +1,23 @@
 module.exports = {
   root: true,
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 2021
   },
   env: {
-    node: true
+    "es2021": true,
+    "node": true
   },
   plugins: [
     '@typescript-eslint'
   ],
   extends: [
-    'plugin:vue/vue3-essential',
-    '@vue/standard',
+    'plugin:vue/vue3-recommended',
     '@vue/typescript/recommended'
   ],
   rules: {
     'promise/param-names': 'off',
     // https://github.com/eslint/eslint/issues/13957
-    indent: 'off'
+    indent: 'off',
+    'vue/require-default-prop': 'off'
   }
 }

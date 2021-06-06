@@ -1,10 +1,19 @@
 <template>
   <a-layout class="app">
-    <div v-if="loading" class="app-skeleton__spin-section">
-      <a-spin size="large" tip="Launching Tinyhouse" />
+    <div
+      v-if="loading"
+      class="app-skeleton__spin-section"
+    >
+      <a-spin
+        size="large"
+        tip="Launching Tinyhouse"
+      />
     </div>
     <template v-else>
-      <a-affix :offset-top="0" class="app_affix-header">
+      <a-affix
+        :offset-top="0"
+        class="app_affix-header"
+      >
         <AppHeader />
       </a-affix>
       <router-view :key="$route.fullPath" />
@@ -13,39 +22,39 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import AppHeader from "./components/AppHeader.vue";
-import { useMutation } from "@vue/apollo-composable";
-import { LOGIN } from "@/lib/graphql";
-import { setViewer } from "@/store/viewer";
+import { defineComponent } from 'vue'
+import AppHeader from './components/AppHeader.vue'
+import { useMutation } from '@vue/apollo-composable'
+import { LOGIN } from '@/lib/graphql'
+import { setViewer } from '@/store/viewer'
 
 export default defineComponent({
-  name: "App",
+  name: 'App',
   components: { AppHeader },
   setup() {
-    const { mutate, loading, onDone: loginSuccess } = useMutation(
-      LOGIN,
-      () => ({
-        variables: {
-          input: null,
-        },
-      })
-    );
-    mutate();
-
+    const {
+      mutate,
+      loading,
+      onDone: loginSuccess,
+      onError,
+    } = useMutation(LOGIN)
+    mutate()
+    onError((err) => {
+      console.log(err)
+    })
     loginSuccess((result) => {
-      setViewer(result.data.login);
-      console.log(result.data.login);
+      setViewer(result.data.login)
+      console.log(result.data.login)
       if (result.data.login.token) {
-        sessionStorage.setItem("token", result.data.login.token);
+        sessionStorage.setItem('token', result.data.login.token)
       } else {
-        sessionStorage.removeItem("token");
+        sessionStorage.removeItem('token')
       }
-    });
+    })
 
-    return { loading };
+    return { loading }
   },
-});
+})
 </script>
 
 <style>
