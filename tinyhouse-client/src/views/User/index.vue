@@ -1,5 +1,9 @@
 <template>
   <a-layout-content class="user">
+    <ErrorBanner
+      v-if="stripeError"
+      description="We had an issue connecting with Stripe. Please try again soon."
+    />
     <PageSkeleton v-if="loading" />
     <template v-else-if="error">
       <ErrorBanner description="This user may not exist or we 've encountered an error. Please try again soon" />
@@ -14,7 +18,8 @@
       <a-col :xs="24">
         <UserProfile
           :user="user"
-          :view-is-user="viewIsUser"
+          :viewer="viewer"
+          :viewer-is-user="viewerIsUser"
         />
       </a-col>
       <a-col :xs="24">
@@ -68,17 +73,25 @@ export default defineComponent({
     )
 
     const user = useResult(result, null, (data) => data.user)
-    const viewIsUser = computed(() => {
+    const viewerIsUser = computed(() => {
       return viewer.id === route.params.id
     })
+
+    // handle error redirected from page strip
+    const stripeError = new URL(window.location.href).searchParams.get(
+      'stripe_error'
+    )
+
     return {
       user,
       loading,
       error,
-      viewIsUser,
+      viewer,
+      viewerIsUser,
       listingsPage,
       bookingsPage,
       limit: PAGE_LIMIT,
+      stripeError,
     }
   },
 })

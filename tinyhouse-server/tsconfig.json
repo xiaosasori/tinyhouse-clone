@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2020",
     "module": "commonjs",
     "rootDir": "./src",
     "outDir": "./build",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "strictNullChecks": false
   },
-  "exclude": ["temp/*.ts"]
+  "exclude": [
+    "temp/*.ts"
+  ]
 }

@@ -2,25 +2,64 @@
   <div class="user-profile">
     <a-card class="user-profile__card">
       <div class="user-profile__avatar">
-        <a-avatar :src="user.avatar" :size="100" />
+        <a-avatar
+          :src="user.avatar"
+          :size="100"
+        />
       </div>
       <a-divider />
       <div class="user-profile__details">
-        <a-typography-title :level="4">Details</a-typography-title>
+        <a-typography-title :level="4">
+          Details
+        </a-typography-title>
         <a-typography-paragraph>
-          Name: <a-typography-text strong>{{ user.name }}</a-typography-text>
+          Name: <a-typography-text strong>
+            {{ user.name }}
+          </a-typography-text>
           <a-typography-paragraph>
             Contact:
-            <a-typography-text strong>{{ user.contact }}</a-typography-text>
+            <a-typography-text strong>
+              {{ user.contact }}
+            </a-typography-text>
           </a-typography-paragraph>
         </a-typography-paragraph>
       </div>
       <template v-if="viewerIsUser">
         <a-divider />
         <div class="user-profile__details">
-          <a-typography-title :level="4">Additional Details</a-typography-title>
+          <a-typography-title :level="4">
+            Additional Details
+          </a-typography-title>
           <!-- {additionalDetails} -->
-          <template v-if="true">
+          <template v-if="user.hasWallet">
+            <a-typography-paragraph>
+              <a-tag color="green">
+                Stripe Registered
+              </a-tag>
+            </a-typography-paragraph>
+            <a-typography-paragraph>
+              Icome Earned:&nbsp;
+              <a-typography-text strong>
+                {{ income }}
+              </a-typography-text>
+            </a-typography-paragraph>
+            <a-button
+              type="danger"
+              class="user-profile__details-cta"
+              :loading="loading"
+              @click="disconnectStripe"
+            >
+              Disconnect Stripe
+            </a-button>
+            <a-typography-paragraph type="secondary">
+              By disconnecting, you won't be able to recieve{" "}
+              <a-typography-text strong>
+                any further payments
+              </a-typography-text>. This will prevent users from
+              booking listings that you might have already created.
+            </a-typography-paragraph>
+          </template>
+          <template v-else>
             <a-typography-paragraph>
               Interested in becoming a TinyHouse host? Register with your Stripe
               account!
@@ -51,17 +90,36 @@
 </template>
 
 <script lang="ts">
-import { PropType } from "vue";
-import { User } from "@/lib/graphql";
-export default {
+import { PropType, defineComponent, computed } from 'vue'
+import { User } from '@/lib/graphql'
+import { formatListingPrice } from '@/utils'
+
+export default defineComponent({
+  name: 'UserProfile',
   props: {
     user: Object as PropType<User>,
+    viewer: Object,
     viewerIsUser: Boolean,
   },
-  methods: {
-    redirectToStripe() {},
+  setup(props) {
+    // https://stripe.com/docs/connect/oauth-reference
+    const stripeAuthUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${
+      import.meta.env.VITE_S_CLIENT_ID
+    }&scope=read_write`
+
+    function redirectToStripe() {
+      window.location.href = stripeAuthUrl
+    }
+
+    const income = computed(() => {
+      return props.user.income ? formatListingPrice(props.user.income) : '0$'
+    })
+
+    function disconnectStripe() {}
+
+    return { redirectToStripe, disconnectStripe, income }
   },
-};
+})
 </script>
 
 <style>

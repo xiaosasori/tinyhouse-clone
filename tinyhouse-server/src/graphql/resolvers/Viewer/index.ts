@@ -1,9 +1,10 @@
 import crypto from 'crypto'
-import { IResolvers } from "apollo-server-express"
-import { Google } from '../../../lib/api'
+import { IResolvers } from 'apollo-server-express'
+import { Google, Stripe } from '../../../lib/api'
 import { Database, Viewer, User } from '../../../lib/types'
-import { LoginArgs } from "./types"
+import { LoginArgs, ConnectStripeArgs } from "./types"
 import { Request, Response } from 'express'
+import { authorize } from '../../../lib/utils'
 
 const cookieOptions = {
   httpOnly: true,
@@ -39,7 +40,7 @@ async function loginViaGoogle(code: string, token: string, db: Database, res: Re
   const userEmail = userEmailsList && userEmailsList[0].value ? userEmailsList[0].value : null
 
   if (!userId || !userName || !userAvatar || !userEmail) {
-    throw new Error("Google login error");
+    throw new Error("Google login error")
   }
 
   const updateRes = await db.users.findOneAndUpdate(
@@ -67,9 +68,9 @@ async function loginViaGoogle(code: string, token: string, db: Database, res: Re
       income: 0,
       bookings: [],
       listings: []
-    });
+    })
 
-    viewer = insertResult.ops[0];
+    viewer = insertResult.ops[0]
   }
 
   res.cookie('viewer', userId, {
@@ -90,12 +91,12 @@ const logInViaCookie = async (
     { _id: req.signedCookies.viewer },
     { $set: { token } },
     { returnOriginal: false }
-  );
+  )
 
   const viewer = updateRes.value
 
   if (!viewer) {
-    res.clearCookie("viewer", cookieOptions);
+    res.clearCookie("viewer", cookieOptions)
   }
 
   return viewer
@@ -143,6 +144,89 @@ export const viewerResolvers: IResolvers = {
         return { didRequest: true }
       } catch (error) {
         throw new Error(`Failed to logout: ${error}`)
+      }
+    },
+    connectStripe: async (
+      _root: undefined,
+      { input }: ConnectStripeArgs,
+      { db, req }: { db: Database; req: Request }
+    ): Promise<Viewer> => {
+      try {
+        const { code } = input
+
+        let viewer = await authorize(db, req)
+        console.log(viewer)
+        if (!viewer) {
+          throw new Error("viewer cannot be found")
+        }
+
+        const wallet = await Stripe.connect(code)
+        if (!wallet) {
+          throw new Error("stripe grant error")
+        }
+
+        const updateRes = await db.users.findOneAndUpdate(
+          { _id: viewer._id },
+          { $set: { walletId: wallet.stripe_user_id } },
+          { returnOriginal: false }
+        )
+
+        if (!updateRes.value) {
+          throw new Error("viewer could not be updated")
+        }
+
+        viewer = updateRes.value
+
+        return {
+          _id: viewer._id,
+          token: viewer.token,
+          avatar: viewer.avatar,
+          walletId: viewer.walletId,
+          didRequest: true
+        }
+      } catch (error) {
+        throw new Error(`Failed to connect with Stripe: ${error}`)
+      }
+    },
+    disconnectStripe: async (
+      _root: undefined,
+      _args: Record<string, unknown>,
+      { db, req }: { db: Database; req: Request }
+    ): Promise<Viewer> => {
+      try {
+        let viewer = await authorize(db, req)
+        if (!viewer || !viewer.walletId) {
+          throw new Error(
+            "viewer cannot be found or has not connected with Stripe"
+          )
+        }
+
+        const wallet = await Stripe.disconnect(viewer.walletId)
+        if (!wallet) {
+          throw new Error("stripe disconnect error")
+        }
+
+        const updateRes = await db.users.findOneAndUpdate(
+          { _id: viewer._id },
+          { $set: { walletId: undefined } },
+          { returnOriginal: false }
+        )
+
+        if (!updateRes.value) {
+          throw new Error("viewer could not be updated")
+        }
+
+        viewer = updateRes.value
+
+        return {
+          _id: viewer._id,
+          token: viewer.token,
+          avatar: viewer.avatar,
+          walletId: viewer.walletId,
+          didRequest: true
+        }
+      } catch (error) {
+        throw new Error(`Failed to disconnect with Stripe: ${error}`)
       }
     }
   },
