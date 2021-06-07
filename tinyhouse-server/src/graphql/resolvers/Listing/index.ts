@@ -1,7 +1,7 @@
 import { IResolvers } from 'apollo-server-express'
 import { Request } from 'express'
 import { ObjectId } from 'mongodb';
-import { ListingArgs, ListingBookingsArgs, ListingBookingsData } from './types'
+import { ListingArgs, ListingBookingsArgs, ListingBookingsData, ListingsData, ListingsArgs, ListingsQuery, ListingsFilter } from './types'
 import { authorize } from '../../../lib/utils'
 
 import { Listing, Database, User, ListingType } from "../../../lib/types";
@@ -23,6 +23,59 @@ export const listingResolvers: IResolvers = {
         return listing;
       } catch (error) {
         throw new Error(`Failed to query listing: ${error}`);
+      }
+    },
+    listings: async (
+      _root: undefined,
+      { location, filter, limit, page }: ListingsArgs,
+      { db }: { db: Database }
+    ): Promise<ListingsData> => {
+      try {
+        const query: ListingsQuery = {};
+
+        const data: ListingsData = {
+          region: null,
+          total: 0,
+          result: []
+        };
+
+        // if (location) {
+        //   const { country, admin, city } = await Google.geocode(location);
+
+        //   if (city) query.city = city;
+        //   if (admin) query.admin = admin;
+        //   if (country) {
+        //     query.country = country;
+        //   } else {
+        //     throw new Error("no country found");
+        //   }
+        //   const cityText = city ? `${city}, ` : "";
+        //   const adminText = admin ? `${admin}, ` : "";
+        //   data.region = `${cityText}${adminText}${country}`;
+        // }
+
+        const cursor = db.listings.find(query);
+
+        if (filter === ListingsFilter.PRICE_LOW_TO_HIGH) {
+          cursor.sort({
+            price: 1
+          });
+        }
+
+        if (filter === ListingsFilter.PRICE_HIGH_TO_LOW) {
+          cursor.sort({
+            price: -1
+          });
+        }
+
+        cursor.skip(page > 0 ? (page - 1) * limit : 0).limit(limit);
+
+        data.total = await cursor.count();
+        data.result = await cursor.toArray();
+
+        return data;
+      } catch (error) {
+        throw new Error(`Failed to query listings: ${error}`);
       }
     }
   },

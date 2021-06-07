@@ -60,6 +60,7 @@ export default defineComponent({
     const route = useRoute()
     const PAGE_LIMIT = 3
     const bookingsPage = ref(1)
+
     const { result, loading, error } = useQuery(LISTING, {
       id: route.params.id,
       limit: PAGE_LIMIT,
