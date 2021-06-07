@@ -3,8 +3,9 @@ import { Request } from 'express'
 import { ObjectId } from 'mongodb';
 import { ListingArgs, ListingBookingsArgs, ListingBookingsData, ListingsData, ListingsArgs, ListingsQuery, ListingsFilter } from './types'
 import { authorize } from '../../../lib/utils'
+import { Google } from '../../../lib/api'
 
-import { Listing, Database, User, ListingType } from "../../../lib/types";
+import { Listing, Database, User } from "../../../lib/types";
 
 export const listingResolvers: IResolvers = {
   Query: {
@@ -39,20 +40,20 @@ export const listingResolvers: IResolvers = {
           result: []
         };
 
-        // if (location) {
-        //   const { country, admin, city } = await Google.geocode(location);
+        if (location) {
+          const { country, admin, city } = await Google.geocode(location);
 
-        //   if (city) query.city = city;
-        //   if (admin) query.admin = admin;
-        //   if (country) {
-        //     query.country = country;
-        //   } else {
-        //     throw new Error("no country found");
-        //   }
-        //   const cityText = city ? `${city}, ` : "";
-        //   const adminText = admin ? `${admin}, ` : "";
-        //   data.region = `${cityText}${adminText}${country}`;
-        // }
+          if (city) query.city = city;
+          if (admin) query.admin = admin;
+          if (country) {
+            query.country = country;
+          } else {
+            throw new Error("no country found");
+          }
+          const cityText = city ? `${city}, ` : "";
+          const adminText = admin ? `${admin}, ` : "";
+          data.region = `${cityText}${adminText}${country}`;
+        }
 
         const cursor = db.listings.find(query);
 

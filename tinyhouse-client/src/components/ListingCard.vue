@@ -18,16 +18,12 @@
           </a-typography-title>
           <a-typography-text
             strong
-            ellipsis
-            class="listing-card__title"
+            class="listing-card__title truncate"
           >
             {{ listing.title }}
           </a-typography-text>
-          <a-typography-text
-            ellipsis
-            class="listing-card__address"
-          >
-            {{ listing.address }}
+          <a-typography-text class="listing-card__address truncate">
+            {{ listing.address }}d
           </a-typography-text>
         </div>
         <div class="listing-card__dimensions listing-card__dimensions--guests">

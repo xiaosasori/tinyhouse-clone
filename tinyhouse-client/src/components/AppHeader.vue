@@ -12,7 +12,7 @@
 
       <div class="app-header__search-input">
         <a-input-search
-          v-model.trim="search"
+          v-model:value="search"
           placeholder="Search 'San Fransisco'"
           enter-button
           @search="handleSearch"
@@ -61,12 +61,14 @@
   </a-layout-header>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script lang="ts">
+import { defineComponent, watch, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { viewer, setViewer } from '@/store/viewer'
 import { useMutation } from '@vue/apollo-composable'
 import { LOGOUT } from '@/lib/graphql'
 import { message } from 'ant-design-vue'
+import { displayErrorMessage } from '@/utils'
 import {
   HomeOutlined,
   LogoutOutlined,
@@ -77,6 +79,7 @@ export default defineComponent({
   name: 'AppHeader',
   components: { HomeOutlined, LogoutOutlined, UserOutlined },
   setup() {
+    const router = useRouter()
     const { mutate: logout, onDone, onError } = useMutation(LOGOUT)
     onDone((result) => {
       setViewer(result.data.logout)
@@ -92,31 +95,32 @@ export default defineComponent({
     function handleLogout() {
       logout()
     }
-    return { handleLogout }
-  },
-  data() {
-    return {
-      search: '',
-      viewer,
+
+    function handleSearch(value: string) {
+      const trimmedValue = value.trim()
+
+      if (trimmedValue) {
+        router.push(`/listings/${value}`)
+      } else {
+        displayErrorMessage('Please enter a valid search!')
+      }
     }
-  },
-  watch: {
-    '$route.path': function (value) {
-      if (!value.includes('/listings')) {
-        this.search = ''
+
+    const search = ref<string>('')
+    const route = useRoute()
+    watch(
+      () => route.path,
+      (value) => {
+        if (!value.includes('/listings')) {
+          search.value = ''
+        }
+        if (value.includes('/listings') && route.params.location) {
+          search.value = route.params.location
+        }
       }
-      if (value.includes('/listings') && this.$route.params.id) {
-        this.search = this.$route.params.id
-      }
-    },
-  },
-  methods: {
-    handleSearch() {
-      this.$router.push(`/listings/${this.search}`)
-    },
+    )
+
+    return { viewer, handleLogout, handleSearch, search }
   },
 })
 </script>
-
-<style scoped>
-</style>

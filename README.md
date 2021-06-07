@@ -14,3 +14,11 @@
 - When choosing `scope`, select email, profile, openid
 - After finishing first steps above, click to `credentials`, select create OAuth Client ID again. Choose `web application`, set authorized JS origins to `http://localhost:...`
 - Enable Google People Api in console to let server get those info
+
+## Geocoding API
+### Setup
+- Enable Geocoding API in console
+- Go to `credentials` tab and create a new API key.
+- Select `Restrict key` in `API restrictions` section. Choose `Geocoding API` in dropdown. Now `save`
+
+### [doc](https://developers.google.com/maps/documentation/geocoding/overview?hl=en#ReverseGeocoding)
