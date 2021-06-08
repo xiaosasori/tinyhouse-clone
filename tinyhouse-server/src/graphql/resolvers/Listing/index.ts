@@ -17,7 +17,7 @@ export const listingResolvers: IResolvers = {
           throw new Error("listing can't be found");
         }
         const viewer = await authorize(db, req);
-        if (viewer && viewer?._id === listing.host) {
+        if (viewer && viewer._id === listing.host) {
           listing.authorized = true;
         }
 

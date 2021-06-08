@@ -205,7 +205,7 @@ export const viewerResolvers: IResolvers = {
         if (!wallet) {
           throw new Error("stripe disconnect error")
         }
-
+        console.log('after wallet')
         const updateRes = await db.users.findOneAndUpdate(
           { _id: viewer._id },
           { $set: { walletId: undefined } },

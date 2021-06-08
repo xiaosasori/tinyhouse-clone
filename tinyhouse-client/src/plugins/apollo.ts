@@ -1,4 +1,5 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
@@ -7,16 +8,25 @@ const httpLink = createHttpLink({
   credentials: 'include'
 })
 
+const authToken = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = sessionStorage.getItem('token');
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      'X-CSRF-TOKEN': token || '',
+    }
+  }
+});
+
 // Cache implementation
 const cache = new InMemoryCache()
 
 // Create the apollo client
 const apolloClient = new ApolloClient({
-  link: httpLink,
+  link: authToken.concat(httpLink),
   cache,
-  headers: {
-    'X-CSRF-TOKEN': sessionStorage.getItem("token") || ''
-  },
 })
 
 export default apolloClient

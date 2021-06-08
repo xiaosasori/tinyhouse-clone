@@ -24,14 +24,15 @@
           </a-typography-paragraph>
         </a-typography-paragraph>
       </div>
+      <!-- logged in user views his profile -->
       <template v-if="viewerIsUser">
         <a-divider />
         <div class="user-profile__details">
           <a-typography-title :level="4">
             Additional Details
           </a-typography-title>
-          <!-- {additionalDetails} -->
-          <template v-if="user.hasWallet">
+          <!-- if user has wallet -->
+          <template v-if="viewer.hasWallet">
             <a-typography-paragraph>
               <a-tag color="green">
                 Stripe Registered
@@ -59,6 +60,7 @@
               booking listings that you might have already created.
             </a-typography-paragraph>
           </template>
+          <!-- if user have no wallet -->
           <template v-else>
             <a-typography-paragraph>
               Interested in becoming a TinyHouse host? Register with your Stripe
@@ -91,8 +93,11 @@
 
 <script lang="ts">
 import { PropType, defineComponent, computed } from 'vue'
-import { User } from '@/lib/graphql'
+import { User, DISCONNECT_STRIPE } from '@/lib/graphql'
 import { formatListingPrice } from '@/utils'
+import { useMutation } from '@vue/apollo-composable'
+import { setViewer } from '@/store/viewer'
+import { displaySuccessNotification, displayErrorMessage } from '@/utils'
 
 export default defineComponent({
   name: 'UserProfile',
@@ -115,12 +120,28 @@ export default defineComponent({
       return props.user.income ? formatListingPrice(props.user.income) : '0$'
     })
 
-    function disconnectStripe() {}
+    // disconnect stripe
+    const { mutate, loading, onDone, onError } = useMutation(DISCONNECT_STRIPE)
+    function disconnectStripe() {
+      mutate()
+    }
 
-    return { redirectToStripe, disconnectStripe, income }
+    onDone((result) => {
+      setViewer({ hasWallet: result.data.disconnectStripe.hasWallet })
+      displaySuccessNotification(
+        "You've successfully disconnected from Stripe!",
+        "You'll have to reconnect with Stripe to continue to create listings."
+      )
+    })
+
+    onError(() => {
+      displayErrorMessage(
+        "Sorry! We were'nt able to disconnect you from Stripe. Please try again later!"
+      )
+    })
+
+    return { redirectToStripe, disconnectStripe, income, loading }
   },
 })
 </script>
 
-<style>
-</style>

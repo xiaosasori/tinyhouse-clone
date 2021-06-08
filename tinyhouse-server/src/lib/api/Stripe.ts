@@ -19,7 +19,7 @@ export const Stripe = {
   },
   async disconnect(stripeUserId: string): Promise<stripe.OAuthDeauthorization> {
     const response = await client.oauth.deauthorize({
-      client_id: process.env.S_CLIENT_ID!,
+      client_id: process.env.S_CLIENT_ID,
       stripe_user_id: stripeUserId
     })
 

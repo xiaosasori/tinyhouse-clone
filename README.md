@@ -22,3 +22,18 @@
 - Select `Restrict key` in `API restrictions` section. Choose `Geocoding API` in dropdown. Now `save`
 
 ### [doc](https://developers.google.com/maps/documentation/geocoding/overview?hl=en#ReverseGeocoding)
+
+## Index DB
+- Go to atlas and create index in collection `listings`
+```json
+{
+  "country": 1,
+  "admin": 1,
+  "city": 1
+}
+```
+
+## [Stripe](https://dashboard.stripe.com/)
+- Connect accounts with option `Platform or marketplace`
+- Add redirect URL to client (e.g: http://localhost:3000)
+- Enable OAuth for Standard accounts. Check `view test data`
