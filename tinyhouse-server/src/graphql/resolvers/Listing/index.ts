@@ -1,11 +1,31 @@
 import { IResolvers } from 'apollo-server-express'
 import { Request } from 'express'
 import { ObjectId } from 'mongodb';
-import { ListingArgs, ListingBookingsArgs, ListingBookingsData, ListingsData, ListingsArgs, ListingsQuery, ListingsFilter } from './types'
+import { ListingArgs, ListingBookingsArgs, ListingBookingsData, ListingsData, ListingsArgs, ListingsQuery, ListingsFilter, HostListingArgs, HostListingInput } from './types'
 import { authorize } from '../../../lib/utils'
 import { Google } from '../../../lib/api'
+import { ListingType } from '../../../lib/types'
 
 import { Listing, Database, User } from "../../../lib/types";
+
+const verifyHostListingInput = (input: HostListingInput): void => {
+  const { title, description, type, price } = input;
+  if (title.length > 100) {
+    throw new Error("listing title must be under 100 characters.");
+  }
+
+  if (description.length > 5000) {
+    throw new Error("listing description must be under 5000 characters.");
+  }
+
+  if (type !== ListingType.Apartment && type !== ListingType.House) {
+    throw new Error("Listing type must be either apartment or house.");
+  }
+
+  if (price < 0) {
+    throw new Error("Price must be greater than 0.");
+  }
+};
 
 export const listingResolvers: IResolvers = {
   Query: {
@@ -81,17 +101,50 @@ export const listingResolvers: IResolvers = {
     }
   },
   Mutation: {
-    // deleteListing: async (_root: undefined, {id}: {id: string}, {db}: {db: Database})
-    // : Promise<Listing> => {
-    //   const deleteRes = await db.listings.findOneAndDelete({
-    //     _id: new ObjectID(id)
-    //   })
+    hostListing: async (
+      _root: undefined,
+      { input }: HostListingArgs,
+      { db, req }: { db: Database; req: Request }
+    ): Promise<Listing> => {
+      verifyHostListingInput(input);
 
-    //   if (!deleteRes.value) {
-    //     throw new Error('Failed to delete listing')
-    //   }
-    //   return deleteRes.value
-    // }
+      const viewer = await authorize(db, req);
+      if (!viewer) {
+        throw new Error("viewer can't be found.");
+      }
+
+      const { country, admin, city } = await Google.geocode(input.address);
+      if (!country || !admin || !city) {
+        throw new Error("invalid address input.");
+      }
+
+      // const imageUrl = await Cloudinary.upload(input.image);
+
+      const insertResult = await db.listings.insertOne({
+        _id: new ObjectId(),
+        ...input,
+        // image: imageUrl,
+        bookings: [],
+        bookingsIndex: {},
+        country,
+        admin,
+        city,
+        host: viewer._id
+      });
+
+      const insertedListing: Listing = insertResult.ops[0];
+
+      await db.users.updateOne(
+        { _id: viewer._id },
+        {
+          $push: {
+            listings: insertedListing._id
+          }
+        }
+      );
+
+      return insertedListing;
+    }
   },
   Listing: {
     id: (listing: Listing): string => listing._id.toString(),

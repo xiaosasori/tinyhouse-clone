@@ -53,7 +53,7 @@
               Disconnect Stripe
             </a-button>
             <a-typography-paragraph type="secondary">
-              By disconnecting, you won't be able to recieve{" "}
+              By disconnecting, you won't be able to recieve
               <a-typography-text strong>
                 any further payments
               </a-typography-text>. This will prevent users from

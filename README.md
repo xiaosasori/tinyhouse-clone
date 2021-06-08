@@ -37,3 +37,4 @@
 - Connect accounts with option `Platform or marketplace`
 - Add redirect URL to client (e.g: http://localhost:3000)
 - Enable OAuth for Standard accounts. Check `view test data`
+- [oAuth](https://stripe.com/docs/connect/oauth-reference#post-token)

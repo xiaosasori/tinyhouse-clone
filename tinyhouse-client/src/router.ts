@@ -31,6 +31,11 @@ const routes = [
     path: '/stripe',
     component: () => import('./views/Stripe.vue')
   },
+  {
+    name: 'Host',
+    path: '/host',
+    component: () => import('./views/Host.vue')
+  },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('./views/NotFound.vue') }
 ]
 

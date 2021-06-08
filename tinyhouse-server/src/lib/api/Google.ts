@@ -59,7 +59,7 @@ export const Google = {
 
     return { user: data }
   },
-  geocode: async (address: string) => {
+  geocode: async (address: string): Promise<Record<string, string>> => {
     const response = await maps.geocode({
       params: {
         key: process.env.G_GEOCODE_KEY!,
