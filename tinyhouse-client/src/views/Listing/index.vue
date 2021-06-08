@@ -35,10 +35,19 @@
           :viewer="viewer"
           :host="listing.host"
           :bookings-index="listing.bookingsIndex"
+          @openModal="modalVisible = true"
         />
       </a-col>
+      <CreateBookingModal
+        v-if="modalVisible"
+        :id="listing.id"
+        :modal-visible="modalVisible"
+        :check-in-date="checkInDate"
+        :check-out-date="checkOutDate"
+        :price="listing.price"
+        @closeModal="modalVisible = false"
+      />
     </a-row>
-    <!-- {listingCreateBookingModalElement} -->
   </a-layout-content>
 </template>
 
@@ -50,12 +59,18 @@ import { ref, defineComponent } from 'vue'
 import ListingDetails from './ListingDetails.vue'
 import ListingBookings from './ListingBookings.vue'
 import ListingCreateBooking from './ListingCreateBooking.vue'
+import CreateBookingModal from './CreateBookingModal.vue'
 import { viewer } from '@/store/viewer'
 import { Moment } from 'moment'
 
 export default defineComponent({
   name: 'PageListing',
-  components: { ListingDetails, ListingBookings, ListingCreateBooking },
+  components: {
+    ListingDetails,
+    ListingBookings,
+    ListingCreateBooking,
+    CreateBookingModal,
+  },
   setup() {
     const route = useRoute()
     const PAGE_LIMIT = 3
@@ -72,6 +87,7 @@ export default defineComponent({
     const checkInDate = ref<Moment | null>(null)
     const checkOutDate = ref<Moment | null>(null)
 
+    const modalVisible = ref<boolean>(false)
     return {
       checkInDate,
       checkOutDate,
@@ -81,6 +97,7 @@ export default defineComponent({
       bookingsPage,
       limit: PAGE_LIMIT,
       viewer,
+      modalVisible,
     }
   },
 })

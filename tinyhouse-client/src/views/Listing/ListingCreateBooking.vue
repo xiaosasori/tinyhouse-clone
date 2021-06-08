@@ -45,6 +45,7 @@
         type="primary"
         class="listing-booking__card-cta"
         :disabled="buttonDisabled"
+        @click="$emit('openModal')"
       >
         Request to book!
       </a-button>
@@ -88,10 +89,8 @@ export default defineComponent({
     host: Object as PropType<ListingData['listing']['host']>,
     bookingsIndex: String,
   },
-  emits: ['update:checkInDate', 'update:checkOutDate'],
+  emits: ['update:checkInDate', 'update:checkOutDate', 'openModal'],
   setup(props) {
-    // const checkInDateLocal = ref(null)
-    // const checkOutDateLocal = ref(null)
     const checkInDateLocal = useVModel(props, 'checkInDate')
     const checkOutDateLocal = useVModel(props, 'checkOutDate')
 
