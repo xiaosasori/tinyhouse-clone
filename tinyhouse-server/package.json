@@ -13,6 +13,7 @@
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.1.16",
     "apollo-server-express": "^2.24.1",
+    "cloudinary": "^1.26.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
