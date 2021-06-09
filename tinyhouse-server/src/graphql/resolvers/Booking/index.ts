@@ -90,7 +90,7 @@ export const bookingResolvers: IResolvers = {
 
         // get user document of host
         const host = await db.users.findOne({ _id: listing.host });
-
+        console.log('host', host)
         if (!host || !host.walletId) {
           throw new Error(
             "the host either can't be found or isn't connected with Stripe"

@@ -38,6 +38,7 @@
 - Add redirect URL to client (e.g: http://localhost:3000)
 - Enable OAuth for Standard accounts. Check `view test data`
 - [oAuth](https://stripe.com/docs/connect/oauth-reference#post-token)
-- [Chark](https://stripe.com/docs/connect/direct-charges)
+- [Charge](https://stripe.com/docs/connect/direct-charges)
+- [Client payment](https://stripe.com/docs/connect/creating-a-payments-page)
 
 ## [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference#examples)

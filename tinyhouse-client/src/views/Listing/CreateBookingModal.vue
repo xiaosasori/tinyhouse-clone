@@ -60,6 +60,10 @@
             hidePostalCode
             class="listing-booking-modal__stripe-card"
           /> -->
+        <div
+          id="stripe-element-mount-point"
+          class="listing-booking-modal__stripe-card"
+        />
         <a-button
           size="large"
           type="primary"
@@ -75,11 +79,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from 'vue'
+import { defineComponent, PropType, computed, ref, onMounted } from 'vue'
 import { Moment } from 'moment'
 import { useMutation } from '@vue/apollo-composable'
 import { CREATE_BOOKING } from '@/lib/graphql'
 import { KeyOutlined } from '@ant-design/icons-vue'
+import { loadStripe } from '@stripe/stripe-js'
+
 import {
   displayErrorMessage,
   displaySuccessNotification,
@@ -98,7 +104,12 @@ export default defineComponent({
   },
   emits: ['closeModal', 'clearBookingData'],
   setup(props, { emit }) {
-    const { mutate, loading, onDone, onError } = useMutation(CREATE_BOOKING)
+    const {
+      mutate: createBooking,
+      loading,
+      onDone,
+      onError,
+    } = useMutation(CREATE_BOOKING)
 
     onDone(() => {
       emit('clearBookingData')
@@ -124,17 +135,16 @@ export default defineComponent({
         )
       }
 
-      const { token, error } = await stripe.createToken()
+      const { token, error } = await stripe.createToken({ ...element })
+      console.log(token)
 
       if (token) {
         createBooking({
-          variables: {
-            input: {
-              source: token.id,
-              checkIn: props.checkInDate.format('YYYY-MM-DD'),
-              checkOut: props.checkOutDate.format('YYYY-MM-DD'),
-              id: props.id,
-            },
+          input: {
+            source: token.id,
+            checkIn: props.checkInDate.format('YYYY-MM-DD'),
+            checkOut: props.checkOutDate.format('YYYY-MM-DD'),
+            id: props.id,
           },
         })
       } else {
@@ -152,6 +162,16 @@ export default defineComponent({
 
     const formattedPrice = computed(() => {
       return formatListingPrice(props.price, false)
+    })
+
+    const pk = import.meta.env.VITE_S_PUBLISHABLE_KEY
+    let stripe
+    let element
+    onMounted(async () => {
+      stripe = await loadStripe(pk)
+      let elements = stripe.elements()
+      element = elements.create('card', { hidePostalCode: true })
+      element.mount('#stripe-element-mount-point')
     })
 
     return {
