@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client"
+import { gql } from "@apollo/client/core"
 
 export const CREATE_BOOKING = gql`
   mutation CreateBooking($input: CreateBookingInput!) {

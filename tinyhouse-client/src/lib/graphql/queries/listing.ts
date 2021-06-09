@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "@apollo/client/core";
 import { ListingType } from "../globalTypes";
 
 export const LISTING = gql`

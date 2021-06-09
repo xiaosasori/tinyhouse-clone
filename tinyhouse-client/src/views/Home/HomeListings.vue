@@ -1,6 +1,9 @@
 <template>
   <div class="home-listings">
-    <a-typography-title :level="4" class="home-listings__title">
+    <a-typography-title
+      :level="4"
+      class="home-listings__title"
+    >
       {{ title }}
     </a-typography-title>
     <a-list
@@ -22,16 +25,15 @@
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent } from "vue";
-import { Listings } from "@/lib/graphql";
-import ListingCard from "@/components/ListingCard.vue";
+import { defineComponent } from 'vue'
+import ListingCard from '@/components/ListingCard.vue'
 
 export default defineComponent({
-  name: "HomeListings",
+  name: 'HomeListings',
   components: { ListingCard },
   props: {
     title: String,
     listings: Array,
   },
-});
+})
 </script>

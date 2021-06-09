@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client/core'
 import { HostListingInput } from '../globalTypes'
 
 export const HOST_LISTING = gql`

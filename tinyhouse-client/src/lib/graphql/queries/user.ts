@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client/core'
 
 export const USER = gql`
   query User($id: ID!, $bookingsPage: Int!, $listingsPage: Int!, $limit: Int!) {

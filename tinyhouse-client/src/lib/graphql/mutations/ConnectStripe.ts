@@ -1,5 +1,5 @@
 import { ConnectStripeInput } from "../globalTypes"
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client/core'
 
 export const CONNECT_STRIPE = gql`
   mutation ConnectStripe($input: ConnectStripeInput!) {
