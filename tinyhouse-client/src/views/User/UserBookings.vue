@@ -1,6 +1,9 @@
 <template>
   <div class="user-bookings">
-    <a-typography-title :level="4" class="user-bookings__title">
+    <a-typography-title
+      :level="4"
+      class="user-bookings__title"
+    >
       Bookings
     </a-typography-title>
     <a-typography-paragraph class="user-bookings__description">
@@ -14,7 +17,7 @@
         sm: 2,
         lg: 4,
       }"
-      :dataSource="userBookings.result"
+      :data-source="userBookings.result"
       :locale="{ emptyText: `You haven't made any bookings!` }"
       :pagination="{
         position: 'top',
@@ -31,14 +34,18 @@
           <div class="user-bookings__bookings-history">
             <div>
               Check in:
-              <a-typography-text strong>{item.checkIn}</a-typography-text>
+              <a-typography-text strong>
+                {{ item.checkIn }}
+              </a-typography-text>
             </div>
             <div>
               Check out:
-              <a-typography-text strong>{item.checkOut}</a-typography-text>
+              <a-typography-text strong>
+                {{ item.checkOut }}
+              </a-typography-text>
             </div>
           </div>
-          <ListingCard :listing="item" />
+          <ListingCard :listing="item.listing" />
         </a-list-item>
       </template>
     </a-list>
@@ -57,6 +64,7 @@ export default defineComponent({
     bookingsPage: Number,
     limit: Number,
   },
+  emits: ['update:bookingsPage'],
   setup(_, { emit }) {
     function setBookingsPage(page: number) {
       emit("update:bookingsPage", page);

@@ -28,7 +28,7 @@
     <HomeListings
       v-else
       title="Premium Listings"
-      :listings="listings.result"
+      :listings="listings?.result"
     />
 
     <div class="home__listings">
@@ -80,12 +80,11 @@
 import { useQuery, useResult } from '@vue/apollo-composable'
 import { defineComponent } from 'vue'
 import { ListingsFilter } from '@/lib/graphql/globalTypes'
-import { LISTINGS, ListingsData } from '@/lib/graphql'
+import { LISTINGS, Listings as ListingsData } from '@/lib/graphql'
 import HomeListingsSkeleton from './HomeListingsSkeleton.vue'
 import HomeListings from './HomeListings.vue'
 import HomeHero from './HomeHero.vue'
 import { useRouter } from 'vue-router'
-import { displayErrorMessage } from '@/utils'
 
 export default defineComponent({
   name: 'PageHome',
@@ -106,16 +105,11 @@ export default defineComponent({
         fetchPolicy: 'cache-and-network',
       }
     )
-    const listings = useResult(result)
+    const listings = useResult<ListingsData>(result)
 
     const search = (value: string) => {
       console.log('search', value)
-      const trimmedValue = value.trim()
-      if (trimmedValue) {
-        router.push(`/listings/${trimmedValue}`)
-      } else {
-        displayErrorMessage('Please enter a valid search!')
-      }
+        router.push(`/listings/${value}`)
     }
 
     return { listings, loading, search }

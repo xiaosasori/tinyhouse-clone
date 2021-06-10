@@ -68,7 +68,6 @@ import { viewer, setViewer } from '@/store/viewer'
 import { useMutation } from '@vue/apollo-composable'
 import { LOGOUT } from '@/lib/graphql'
 import { message } from 'ant-design-vue'
-import { displayErrorMessage } from '@/utils'
 import {
   HomeOutlined,
   LogoutOutlined,
@@ -97,13 +96,7 @@ export default defineComponent({
     }
 
     function handleSearch(value: string) {
-      const trimmedValue = value.trim()
-
-      if (trimmedValue) {
-        router.push(`/listings/${value}`)
-      } else {
-        displayErrorMessage('Please enter a valid search!')
-      }
+      router.push(`/listings/${value}`)
     }
 
     const search = ref<string>('')

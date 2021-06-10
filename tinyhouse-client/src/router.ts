@@ -13,7 +13,7 @@ const routes = [
   },
   {
     name: 'Listings',
-    path: '/listings/:location',
+    path: '/listings/:location?',
     component: () => import('./views/Listings/index.vue')
   },
   {

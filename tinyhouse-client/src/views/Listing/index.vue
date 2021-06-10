@@ -46,6 +46,7 @@
         :check-out-date="checkOutDate"
         :price="listing.price"
         @closeModal="modalVisible = false"
+        @clearBookingData="clearBookingData"
       />
     </a-row>
   </a-layout-content>
@@ -87,7 +88,15 @@ export default defineComponent({
     const checkInDate = ref<Moment | null>(null)
     const checkOutDate = ref<Moment | null>(null)
 
+    function clearBookingData() {
+      modalVisible.value = false
+      checkInDate.value = null
+      checkOutDate.value = null
+      window.location.reload()
+    }
+
     const modalVisible = ref<boolean>(false)
+
     return {
       checkInDate,
       checkOutDate,
@@ -98,10 +107,8 @@ export default defineComponent({
       limit: PAGE_LIMIT,
       viewer,
       modalVisible,
+      clearBookingData,
     }
   },
 })
 </script>
-
-<style>
-</style>

@@ -23,7 +23,18 @@
             format="YYYY/MM/DD"
             :show-today="false"
             @openChange="checkOutDateLocal = null"
-          />
+          >
+            <template #renderExtraFooter>
+              <div>
+                <a-typography-text
+                  type="secondary"
+                  class="ant-calendar-footer-text"
+                >
+                  You can only book a listing within 90 days from today.
+                </a-typography-text>
+              </div>
+            </template>
+          </a-date-picker>
         </div>
         <div class="listing-booking__card-date-picker">
           <a-typography-paragraph strong>
@@ -36,7 +47,34 @@
             :show-today="false"
             :disabled="checkOutInputDisabled"
             @change="verifyAndSetCheckOutDate"
-          />
+          >
+            <template #dateRender="{current}">
+              <a-tooltip
+                v-if="moment(current).isSame(checkInDate, 'day')"
+                title="Check in date"
+              >
+                <div class="ant-calendar-date ant-calendar-date__check-in">
+                  {{ current.date() }}
+                </div>
+              </a-tooltip>
+              <div
+                v-else
+                class="ant-calendar-date"
+              >
+                {{ current.date() }}
+              </div>
+            </template>
+            <template #renderExtraFooter>
+              <div>
+                <a-typography-text
+                  type="secondary"
+                  class="ant-calendar-footer-text"
+                >
+                  Checkout cannot be before check-in.
+                </a-typography-text>
+              </div>
+            </template>
+          </a-date-picker>
         </div>
       </div>
       <a-divider />
@@ -112,7 +150,10 @@ export default defineComponent({
       if (currentDate) {
         // days before today and today
         const dateIsBeforeEndOfDay = currentDate.isBefore(moment().endOf('day'))
-        return dateIsBeforeEndOfDay || dateIsBooked(currentDate)
+        const dateIsMoreThanThreMonthsAhead = moment(currentDate).isAfter(
+          moment().endOf('day').add(90, 'days')
+        )
+        return dateIsBeforeEndOfDay || dateIsMoreThanThreMonthsAhead || dateIsBooked(currentDate)
       }
       return false
     }
@@ -173,6 +214,7 @@ export default defineComponent({
     const formatPrice = computed(() => {
       return formatListingPrice(props.price)
     })
+
     return {
       disabledDate,
       verifyAndSetCheckOutDate,
@@ -183,6 +225,7 @@ export default defineComponent({
       checkInDateLocal,
       checkOutDateLocal,
       formatPrice,
+      moment
     }
   },
 })

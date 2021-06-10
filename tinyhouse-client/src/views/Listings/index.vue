@@ -2,7 +2,7 @@
   <a-layout-content class="listings">
     <ListingsSkeleton v-if="loading" />
     <template v-else-if="error">
-      <ErrorBanner description="We either couldn't find anything matching your search or we've encountered an error. If you're searching for a unique location, try searching again with more common keywords." />
+      <ErrorBanner description="We either couldn't find anything matching your search or the Geocoding API's quota may have exceeded. Try searching again with empty keyword." />
       <ListingsSkeleton />
     </template>
     <template v-else>
@@ -10,7 +10,7 @@
         :level="3"
         class="listings__title"
       >
-        Results for "{{ listings.region }}"
+        Results for "{{ listings.region || 'all listings' }}"
       </a-typography-title>
       <div v-if="listings.result.length > 0">
         <a-affix :offset-top="64">
@@ -74,8 +74,8 @@ export default defineComponent({
   components: { ListingsSkeleton, ListingsFilters, ListingCard },
   setup() {
     const route = useRoute()
-    const PAGE_LIMIT = 4
-    const location = ref<string>(route.params.location)
+    const PAGE_LIMIT = 8
+    const location = ref<string>(route.params.location as string)
     const filter = ref<ListingsFilter>(ListingsFilter.PRICE_LOW_TO_HIGH)
     const page = ref<number>(1)
 

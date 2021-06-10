@@ -4,7 +4,7 @@
       v-if="stripeError"
       description="We had an issue connecting with Stripe. Please try again soon."
     />
-    <PageSkeleton v-if="loading" />
+    <PageSkeleton v-if="loading && !user" />
     <template v-else-if="error">
       <ErrorBanner description="This user may not exist or we 've encountered an error. Please try again soon" />
       <PageSkeleton />
@@ -45,7 +45,7 @@
 import { useQuery, useResult } from '@vue/apollo-composable'
 import { User as UserData, USER } from '@/lib/graphql'
 import { useRoute } from 'vue-router'
-import { ref, computed, defineComponent } from 'vue'
+import { reactive, toRefs, computed, defineComponent } from 'vue'
 import { viewer } from '@/store/viewer'
 import UserProfile from './UserProfile.vue'
 import UserListings from './UserListings.vue'
@@ -56,17 +56,16 @@ export default defineComponent({
   components: { UserProfile, UserListings, UserBookings },
   setup() {
     const route = useRoute()
-    const bookingsPage = ref(1)
-    const listingsPage = ref<number>(1)
     const PAGE_LIMIT = 4
+    const variables = reactive({
+      id: route.params.id,
+      bookingsPage: 1,
+      listingsPage: 1,
+      limit: PAGE_LIMIT
+    })
     const { result, loading, error } = useQuery<UserData>(
       USER,
-      {
-        id: route.params.id,
-        bookingsPage,
-        listingsPage,
-        limit: PAGE_LIMIT,
-      },
+      variables,
       {
         fetchPolicy: 'cache-and-network',
       }
@@ -88,9 +87,7 @@ export default defineComponent({
       error,
       viewer,
       viewerIsUser,
-      listingsPage,
-      bookingsPage,
-      limit: PAGE_LIMIT,
+      ...toRefs(variables),
       stripeError,
     }
   },

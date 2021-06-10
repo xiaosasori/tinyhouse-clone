@@ -4,7 +4,7 @@ import App from './App.vue'
 import apolloClient from './plugins/apollo'
 import { DefaultApolloClient } from "@vue/apollo-composable"
 import {
-  Layout, Spin, Affix, Input, InputNumber, Menu, Avatar, Button, Alert, Card, Skeleton,
+  Layout, Spin, Affix, Input, InputNumber, Menu, Avatar, Button, Alert, Card, Skeleton, Tooltip,
   Form, Typography, Radio, Upload, Empty, Row, Col, List, Modal, Divider, DatePicker, Tag, Select, Pagination
 } from 'ant-design-vue'
 // import Antd from 'ant-design-vue'
@@ -44,6 +44,7 @@ app.use(DatePicker)
 app.use(Tag)
 app.use(Select)
 app.use(Pagination)
+app.use(Tooltip)
 // app.use(Antd)
 app.use(router)
 app.component('ErrorBanner', ErrorBanner)

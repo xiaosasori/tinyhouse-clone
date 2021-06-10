@@ -56,10 +56,6 @@
       </div>
       <a-divider />
       <div class="listing-booking-modal__stripe-card-section">
-        <!-- <CardElement
-            hidePostalCode
-            class="listing-booking-modal__stripe-card"
-          /> -->
         <div
           id="stripe-element-mount-point"
           class="listing-booking-modal__stripe-card"
@@ -74,12 +70,15 @@
           Book
         </a-button>
       </div>
+      <a-typography-paragraph type="secondary">
+        Test using the credit card number: 4242 4242 4242 4242, a future expiry date, and any 3 digits for the CVC code.
+      </a-typography-paragraph>
     </div>
   </a-modal>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed, ref, onMounted } from 'vue'
+import { defineComponent, PropType, computed, onMounted, onUpdated, ref } from 'vue'
 import { Moment } from 'moment'
 import { useMutation } from '@vue/apollo-composable'
 import { CREATE_BOOKING } from '@/lib/graphql'
