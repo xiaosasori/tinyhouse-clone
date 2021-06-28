@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-require('dotenv').config()
+// require('dotenv').config()
 
 import express, { Application } from 'express'
 import cookieParser from 'cookie-parser'
@@ -18,8 +18,8 @@ const mount = async (app: Application) => {
   app.use(cors({ origin: process.env.PUBLIC_URL, credentials: true }))
   app.use(compression())
 
-  // app.use(express.static(`${__dirname}/client`))
-  // app.get('/*', (_req, res) => res.sendFile(`${__dirname}/client/index.html`))
+  app.use(express.static(`${__dirname}/client`))
+  app.get('/*', (_req, res) => res.sendFile(`${__dirname}/client/index.html`))
 
   const server = new ApolloServer({
     typeDefs,

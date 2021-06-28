@@ -1,3 +1,4 @@
+# [Tinyhouse](https://tinyhouse-vite.herokuapp.com)
 ## Features
 - Sign-in with their Google account
 - Search for listing in different locations in the world
@@ -42,3 +43,11 @@
 - [Client payment](https://stripe.com/docs/connect/creating-a-payments-page)
 
 ## [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference#examples)
+
+## Screenshots
+![Home page](./screenshots/home.png "Home page")
+![Profile](./screenshots/profile.png "Profile")
+![Connecting stripe](./screenshots/connect-stripe.png "Connecting stripe")
+![Search](./screenshots/search.png "Search")
+![Booking](./screenshots/book.png "Booking")
+![Create list](./screenshots/create.png "Create list")

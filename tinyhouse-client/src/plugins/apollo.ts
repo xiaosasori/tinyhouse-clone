@@ -4,7 +4,8 @@ import { setContext } from '@apollo/client/link/context'
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: 'http://localhost:8080/api',
+  uri: 'http://localhost:8080/api', // dev
+  // uri: '/api', // production
   credentials: 'include'
 })
 
